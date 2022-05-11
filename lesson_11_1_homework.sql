@@ -1,0 +1,35 @@
+USE shop;
+
+DROP TABLE IF EXISTS logs;
+CREATE TABLE logs(
+
+id SERIAL,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+table_name VARCHAR(255),
+row_id BIGINT NOT NULL,
+name VARCHAR(255)
+) ENGINE=ARCHIVE;
+
+DROP TRIGGER IF EXISTS log_cat;
+DELIMITER ||
+CREATE TRIGGER log_cat AFTER INSERT
+ON catalogs FOR EACH ROW BEGIN
+INSERT INTO `logs` SET row_id=NEW.id, name=NEW.name, table_name='catalgos';
+END||
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS log_prod;
+DELIMITER ||
+CREATE TRIGGER log_prod AFTER INSERT
+ON products FOR EACH ROW BEGIN
+INSERT INTO `logs` SET row_id=NEW.id, name=NEW.name, table_name='products';
+END||
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS log_user;
+DELIMITER ||
+CREATE TRIGGER log_user AFTER INSERT
+ON users FOR EACH ROW BEGIN
+INSERT INTO `logs` SET row_id=NEW.id, name=NEW.name, table_name='users';
+END||
+DELIMITER ;
